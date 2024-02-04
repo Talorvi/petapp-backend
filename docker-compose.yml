@@ -1,0 +1,81 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # PHP Application Service
+  app:
+    build:
+      context: ./petapp
+      dockerfile: Dockerfile
+    container_name: laravel-app
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./petapp:/var/www
+    networks:
+      - app-network
+    command: >
+      bash -c "chown -R www-data:www-data /var/www/storage &&
+               chown -R www-data:www-data /var/www/bootstrap/cache &&
+               php-fpm"
+
+  # Nginx Web Server Service
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-server
+    restart: unless-stopped
+    ports:
+      - "8080:80"  # Map port 80 in the container to port 8080 on the host
+    volumes:
+      - ./petapp:/var/www  # Ensure this matches the path in the app service
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf  # Mount the Nginx config file
+    networks:
+      - app-network
+    depends_on:
+      - app
+
+  # MySQL Service
+  db:
+    image: mysql:latest
+    container_name: mysql-server
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - dbdata:/var/lib/mysql
+    ports:
+      - '3306:3306'
+    networks:
+      - app-network
+
+  # Redis Service
+  redis:
+    image: 'redis:alpine'
+    container_name: laravel_redis
+    ports:
+      - '6379:6379'
+    networks:
+      - app-network
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: meilisearch
+    ports:
+      - "7700:7700"  # Map port 7700 in the container to port 7700 on the host
+    volumes:
+      - ./meilisearch-data:/data.ms  # Persist MeiliSearch data
+    networks:
+      - app-network
+    environment:
+      MEILI_MASTER_KEY: '3e75d0ca-c625-4757-9cf7-bc70a0e16b6c'
+
+# Volumes for persisting data
+volumes:
+  dbdata:
+  meilisearch-data:
+
+# Networks for inter-container communication
+networks:
+  app-network:
+    driver: bridge
