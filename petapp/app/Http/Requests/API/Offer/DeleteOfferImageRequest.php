@@ -14,14 +14,15 @@ class DeleteOfferImageRequest extends AbstractApiRequest
      */
     public function authorize(): bool
     {
-        // Implement your authorization logic here.
-        // You may want to ensure that the offer belongs to the user and that the image exists.
-        $offer = Offer::find($this->route('offerId'));
+        $offer = $this->route('offer');
+
+        $offer = Offer::find($offer);
+
         if (!$offer) {
             return false;
         }
 
-        return $offer->user_id == auth()->id();
+        return $offer->user_id == (string)auth()->id();
     }
 
     /**

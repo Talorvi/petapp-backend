@@ -14,8 +14,15 @@ class UploadOfferImagesRequest extends AbstractApiRequest
      */
     public function authorize(): bool
     {
-        $offer = Offer::find($this->route('offerId'));
-        return $offer && $offer->user_id == auth()->id();
+        $offer = $this->route('offer');
+
+        $offer = Offer::find($offer);
+
+        if (!$offer) {
+            return false;
+        }
+
+        return $offer->user_id == (string)auth()->id();
     }
 
     /**

@@ -30,7 +30,6 @@ Route::middleware(['auth:api', 'api.custom'])->group(function () {
     Route::post('/offers/{offer}/ratings', [OfferController::class, 'storeRating']);
     Route::put('/ratings/{rating}', [OfferController::class, 'updateRating']);
     Route::delete('/ratings/{rating}', [OfferController::class, 'destroyRating']);
-
     Route::post('/offers/{offer}/images', [OfferController::class, 'uploadImage']);
     Route::delete('/offers/{offer}/images/{image}', [OfferController::class, 'deleteImage']);
 

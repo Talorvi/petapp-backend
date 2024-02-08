@@ -19,7 +19,7 @@ class Offer extends Model implements HasMedia
 
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $appends = ['average_rating', 'user'];
+    protected $appends = ['average_rating', 'user', 'images'];
 
     /**
      * The attributes that are mass assignable.
@@ -99,4 +99,14 @@ class Offer extends Model implements HasMedia
     {
         return $this->user()->first(); // Use the existing user relationship
     }
+
+    public function getImagesAttribute()
+    {
+        // Use the getMedia method from Spatie's package to fetch the 'offer_images' collection
+        return $this->getMedia('offer_images')->map(function ($item) {
+            // For each media item, return its URL
+            return $item->getUrl();
+        })->toArray();
+    }
+
 }

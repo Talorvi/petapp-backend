@@ -18,6 +18,7 @@ use App\Services\OfferService;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Support\Str;
 
 class OfferController extends Controller
 {
@@ -150,13 +151,19 @@ class OfferController extends Controller
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $offer->addMedia($image)->toMediaCollection('offer_images');
+                $randomFileName = Str::random(40) . '.' . $image->getClientOriginalExtension();
+
+                $offer->addMedia($image)
+                    ->usingFileName($randomFileName)
+                    ->toMediaCollection('offer_images');
             }
+
             return response()->json(['message' => __('messages.images_uploaded_successfully')]);
         }
 
-        return response()->json(['message' => __('messages.image_not_found')], ResponseAlias::HTTP_BAD_REQUEST);
+        return response()->json(['message' => __('messages.no_images_provided')], ResponseAlias::HTTP_BAD_REQUEST);
     }
+
 
     public function deleteImage(DeleteOfferImageRequest $request, $offerId, $imageId): JsonResponse
     {
