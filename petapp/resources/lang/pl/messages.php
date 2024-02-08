@@ -28,4 +28,8 @@ return [
     'could_not_delete_offer' => 'Nie można usunąć oferty.',
     'offer_already_rated' => 'Już oceniłeś tę ofertę.',
     'rating_not_found' => 'Nie znaleziono oceny.',
+    'images_uploaded_successfully' => 'Zdjęcia zostały pomyślnie wgrane.',
+    'no_images_provided' => 'Brak zdjęć.',
+    'image_deleted_successfully' => 'Zdjęcie zostało pomyślnie usunięte.',
+    'image_not_found' => 'Nie znaleziono zdjęcia.',
 ];

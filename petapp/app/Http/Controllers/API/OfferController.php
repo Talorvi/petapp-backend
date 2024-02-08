@@ -3,20 +3,20 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\API\Offer\DeleteOfferImageRequest;
 use App\Http\Requests\API\Offer\DestroyOfferRequest;
 use App\Http\Requests\API\Offer\OfferSearchRequest;
 use App\Http\Requests\API\Offer\StoreOfferRequest;
 use App\Http\Requests\API\Offer\UpdateOfferRequest;
+use App\Http\Requests\API\Offer\UploadOfferImagesRequest;
 use App\Http\Requests\API\Rating\DeleteRatingRequest;
 use App\Http\Requests\API\Rating\StoreRatingRequest;
 use App\Http\Requests\API\Rating\UpdateRatingRequest;
 use App\Models\Offer;
 use App\Models\Rating;
 use App\Services\OfferService;
-use DateTime;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class OfferController extends Controller
@@ -57,8 +57,6 @@ class OfferController extends Controller
             $direction = $request->input('sort_direction', 'desc');
             $query->orderBy('updated_at', $direction);
         }
-
-        //dd($query->get());
 
         $offers = $query->paginate(10);
 
@@ -142,4 +140,38 @@ class OfferController extends Controller
 
         return response()->json(null, ResponseAlias::HTTP_NO_CONTENT);
     }
+
+    public function uploadImage(UploadOfferImagesRequest $request, $offerId): JsonResponse
+    {
+        $offer = Offer::find($offerId);
+        if (!$offer) {
+            return response()->json(['message' => __('messages.offer_not_found')], ResponseAlias::HTTP_NOT_FOUND);
+        }
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $offer->addMedia($image)->toMediaCollection('offer_images');
+            }
+            return response()->json(['message' => __('messages.images_uploaded_successfully')]);
+        }
+
+        return response()->json(['message' => __('messages.image_not_found')], ResponseAlias::HTTP_BAD_REQUEST);
+    }
+
+    public function deleteImage(DeleteOfferImageRequest $request, $offerId, $imageId): JsonResponse
+    {
+        $offer = Offer::find($offerId);
+        if (!$offer) {
+            return response()->json(['message' => __('messages.offer_not_found')], ResponseAlias::HTTP_NOT_FOUND);
+        }
+
+        $image = $offer->images()->where('id', $imageId)->first();
+        if ($image) {
+            $image->delete();
+            return response()->json(['message' => __('messages.image_deleted_successfully')]);
+        }
+
+        return response()->json(['message' => __('messages.image_not_found')], ResponseAlias::HTTP_BAD_REQUEST);
+    }
+
 }

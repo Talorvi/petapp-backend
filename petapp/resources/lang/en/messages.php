@@ -28,4 +28,8 @@ return [
     'could_not_delete_offer' => 'Could not delete offer.',
     'offer_already_rated' => 'You have already rated this offer.',
     'rating_not_found' => 'Rating not found.',
+    'images_uploaded_successfully' => 'Images uploaded successfully.',
+    'no_images_provided' => 'No images provided.',
+    'image_deleted_successfully' => 'Image deleted successfully.',
+    'image_not_found' => 'Image not found.',
 ];

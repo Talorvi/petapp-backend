@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
-use App\Traits\ConditionallySearchable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Offer extends Model
+class Offer extends Model implements HasMedia
 {
-    use HasFactory, Searchable;
+    use HasFactory, Searchable, HasUuids, InteractsWithMedia;
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -53,6 +56,16 @@ class Offer extends Model
         ];
     }
 
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('offer_images')->useDisk('public');
+    }
+
+    public function images(): MorphMany
+    {
+        return $this->media()->where('collection_name', 'offer_images');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -68,7 +81,6 @@ class Offer extends Model
         return $this->ratings()->avg('rating');
     }
 
-    // Accessor for the average rating
     public function getAverageRatingAttribute()
     {
         return $this->averageRating();
