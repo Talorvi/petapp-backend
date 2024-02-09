@@ -78,6 +78,7 @@ class OfferController extends Controller
     public function store(StoreOfferRequest $request): JsonResponse
     {
         $offer = $this->offerService->store($request->validated());
+        $offer->save();
         return response()->json($offer, ResponseAlias::HTTP_CREATED);
     }
 
@@ -118,6 +119,8 @@ class OfferController extends Controller
             'review' => $request->review,
         ]);
 
+        $offer->save();
+
         return response()->json($rating, 201);
     }
 
@@ -131,13 +134,18 @@ class OfferController extends Controller
     {
         $rating->update($request->validated());
 
+        $rating->offer()->save();
+
         return response()->json($rating, ResponseAlias::HTTP_OK);
     }
 
 
     public function destroyRating(DeleteRatingRequest $request, Rating $rating): JsonResponse
     {
+        $offer = $rating->offer;
         $rating->delete();
+
+        $offer->save();
 
         return response()->json(null, ResponseAlias::HTTP_NO_CONTENT);
     }
@@ -176,6 +184,8 @@ class OfferController extends Controller
                 $messageKey = 'messages.all_images_processed';
             }
 
+            $offer->save();
+
             return response()->json(['message' => __($messageKey, ['processed' => count($imagesToProcess), 'total' => count($request->file('images')), 'max' => $maxImagesAllowed])]);
         }
 
@@ -193,6 +203,7 @@ class OfferController extends Controller
         $image = $offer->images()->where('id', $imageId)->first();
         if ($image) {
             $image->delete();
+            $offer->save();
             return response()->json(['message' => __('messages.image_deleted_successfully')]);
         }
 
