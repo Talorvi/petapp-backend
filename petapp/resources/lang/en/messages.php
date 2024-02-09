@@ -32,4 +32,7 @@ return [
     'no_images_provided' => 'No images provided.',
     'image_deleted_successfully' => 'Image deleted successfully.',
     'image_not_found' => 'Image not found.',
+    'image_limit_reached' => 'You cannot upload more than :max images.',
+    'some_images_not_processed' => ':processed z :total obrazów zostało przetworzonych. Limit :max obrazów został przekroczony.',
+    'all_images_processed' => 'Wszystkie :processed obrazów zostało przetworzonych.',
 ];

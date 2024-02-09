@@ -150,7 +150,17 @@ class OfferController extends Controller
         }
 
         if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
+            $currentImageCount = $offer->getMedia('offer_images')->count();
+            $maxImagesAllowed = 10;
+            $availableSlots = $maxImagesAllowed - $currentImageCount;
+
+            if ($availableSlots <= 0) {
+                // All slots are filled, cannot upload any more images
+                return response()->json(['message' => __('messages.image_limit_reached', ['max' => $maxImagesAllowed])], ResponseAlias::HTTP_BAD_REQUEST);
+            }
+
+            $imagesToProcess = array_slice($request->file('images'), 0, $availableSlots);
+            foreach ($imagesToProcess as $image) {
                 $randomFileName = Str::random(40) . '.' . $image->getClientOriginalExtension();
 
                 $offer->addMedia($image)
@@ -158,7 +168,15 @@ class OfferController extends Controller
                     ->toMediaCollection('offer_images');
             }
 
-            return response()->json(['message' => __('messages.images_uploaded_successfully')]);
+            if (count($imagesToProcess) < count($request->file('images'))) {
+                // Some images were not processed due to limit
+                $messageKey = 'messages.some_images_not_processed';
+            } else {
+                // All images processed successfully
+                $messageKey = 'messages.all_images_processed';
+            }
+
+            return response()->json(['message' => __($messageKey, ['processed' => count($imagesToProcess), 'total' => count($request->file('images')), 'max' => $maxImagesAllowed])]);
         }
 
         return response()->json(['message' => __('messages.no_images_provided')], ResponseAlias::HTTP_BAD_REQUEST);
