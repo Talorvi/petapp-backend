@@ -193,18 +193,18 @@ class OfferController extends Controller
     }
 
 
-    public function deleteImage(DeleteOfferImageRequest $request, $offerId, $imageId): JsonResponse
+    public function deleteImage(DeleteOfferImageRequest $request, $offerId, $imageName): JsonResponse
     {
         $offer = Offer::find($offerId);
         if (!$offer) {
             return response()->json(['message' => __('messages.offer_not_found')], ResponseAlias::HTTP_NOT_FOUND);
         }
 
-        $image = $offer->images()->where('id', $imageId)->first();
+        $image = $offer->images()->where('file_name', $imageName)->first();
         if ($image) {
             $image->delete();
             $offer->save();
-            return response()->json(['message' => __('messages.image_deleted_successfully')]);
+            return response()->json(['message' => __('messages.image_deleted_successfully')], ResponseAlias::HTTP_NO_CONTENT);
         }
 
         return response()->json(['message' => __('messages.image_not_found')], ResponseAlias::HTTP_BAD_REQUEST);

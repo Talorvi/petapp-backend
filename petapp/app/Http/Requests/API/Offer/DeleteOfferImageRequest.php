@@ -34,7 +34,7 @@ class DeleteOfferImageRequest extends AbstractApiRequest
     {
         return [
             // Rules can be defined here if needed, for example:
-            'imageId' => 'required|exists:media,id'
+            //'imageId' => 'required|exists:media,id'
         ];
     }
 }
