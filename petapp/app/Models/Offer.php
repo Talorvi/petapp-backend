@@ -34,6 +34,10 @@ class Offer extends Model implements HasMedia
         'user_id',
     ];
 
+    protected $hidden = [
+        'media'
+    ];
+
     /**
      * Get the indexable data array for the model.
      *

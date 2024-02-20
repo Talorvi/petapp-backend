@@ -36,7 +36,7 @@ class OfferController extends Controller
         if($request->filled('query')) {
             $query = Offer::search($request->input('query'));
         } else {
-            $query = Offer::query();
+            $query = Offer::search('');
         }
 
         // Additional search criteria
