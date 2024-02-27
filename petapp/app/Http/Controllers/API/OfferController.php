@@ -44,7 +44,7 @@ class OfferController extends Controller
             $query->where('user_id', $request->input('user_id'));
         }
         if ($request->filled('minimum_rating')) {
-            $query->where('average_rating', '>=', $request->input('minimum_rating'));
+            $query = $query->where('average_rating >', $request->input('minimum_rating'));
         }
 
         // Sorting

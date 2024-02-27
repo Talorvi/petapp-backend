@@ -28,6 +28,7 @@ Route::middleware(['auth:api', 'api.custom'])->group(function () {
     Route::get('/offers/{offer}', [OfferController::class, 'show']);
     Route::put('/offers/{offer}', [OfferController::class, 'update']);
     Route::delete('/offers/{offer}', [OfferController::class, 'destroy']);
+    Route::get('/offers/{offer}/ratings', [OfferController::class, 'getRatings']);
     Route::post('/offers/{offer}/ratings', [OfferController::class, 'storeRating']);
     Route::put('/ratings/{rating}', [OfferController::class, 'updateRating']);
     Route::delete('/ratings/{rating}', [OfferController::class, 'destroyRating']);
